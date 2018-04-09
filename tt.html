@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+	<script src='https://api.mapbox.com/mapbox-gl-js/v0.44.1/mapbox-gl.js'></script>
+	<link href='https://api.mapbox.com/mapbox-gl-js/v0.44.1/mapbox-gl.css' rel='stylesheet' />
+	<script src="/socket.io/socket.io.js"></script>
+	<style type="text/css">
+		body { margin:0; padding:0; }
+        #map { position:absolute; top:0; bottom:0; width:100%; }
+        .map-overlay {
+            position: absolute;
+            width: 25%;
+            top: 0;
+            left: 0;
+            padding: 10px;
+        }
+
+        .map-overlay .map-overlay-inner {
+            background-color: #fff;
+            box-shadow:0 1px 2px rgba(0, 0, 0, 0.20);
+            border-radius: 3px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+
+        .map-overlay input {
+            background-color: transparent;
+            display: inline-block;
+            width: 100%;
+            position: relative;
+            margin: 0;
+            cursor: pointer;
+        }
+        .label {
+          width: 45%;
+          display: inline-block;
+        }
+        .row {
+          height: 12px;
+          width: 100%;
+        }
+	</style>
+</head>
+<body>
+
+<div id='map'></div>
+<div class='map-overlay top'>
+    <div class='map-overlay-inner'>
+    	<div class='row labels'>
+    	    <div id="min" class='label' style="text-align: left;"></div>
+<!--     	    <div id="state" class='label' style="text-align: center;"></div> -->
+    	    <div id="max" class='label' style="text-align: right;"></div>
+    	</div>
+        <input id='slider' type='range' min='0' max='11' step='0.01' value='0' />
+    </div>
+</div>
+
+<script>
+	// fetch('http://localhost:3000/time').then(function(time){
+	// 	document.getElementById('slider').setAttribute("min", time.min)
+	// 	document.getElementById('slider').setAttribute("max", time.max)
+	// })
+
+	mapboxgl.accessToken = 'pk.eyJ1IjoiNDM1NTgwMDM0IiwiYSI6ImNqZjdmbGdkdzFlOWMyd3FoanZmbTEyYjEifQ.pvThLi2MHXE0kWURBvrQxw';
+	var map = new mapboxgl.Map({
+	container: 'map',
+	style: 'mapbox://styles/mapbox/light-v9',
+	center: [151.1781916,-33.7969122],
+	zoom: 10
+	});
+
+
+
+	function pointOnCircle(long, lat) {
+	    return {
+	        "type": "Point",
+	        "coordinates": [
+	            long,
+	            lat
+	        ]
+	    };
+	}
+
+	map.on('load', function () {
+	    // Add a source and layer displaying a point which will be animated in a circle.
+
+	   		let id
+	    	if(map.getSource(id)){
+	    		console.log(1)
+
+	    		map.getSource(id).setData(pointOnCircle(data.long, data.lat))
+	    	} else {
+	    		let id = "1"
+	    		console.log(2)
+	    		map.addSource(id, {
+	    		    "type": "geojson",
+	    		    "data": pointOnCircle(151.1781916,-33.7969122)
+	    		});
+
+	    		map.addLayer({
+	    		    "id": id,
+	    		    "source": id,
+	    		    "type": "circle",
+	    		    "paint": {
+	    		        "circle-radius": 10,
+	    		        "circle-color": "#007cbf"
+	    		    }
+	    		});
+	    	}
+
+
+
+	    // function animateMarker(timestamp) {
+	    //     // Update the data to a new position based on the animation timestamp. The
+	    //     // divisor in the expression `timestamp / 1000` controls the animation speed.
+	    //     map.getSource('point').setData(pointOnCircle(timestamp / 10));
+
+	    //     // Request the next frame of the animation.
+	    //     requestAnimationFrame(animateMarker);
+	    // }
+
+	    // // Start the animation.
+	    // animateMarker(0);
+	})
+</script>
+</body>
+</html>
